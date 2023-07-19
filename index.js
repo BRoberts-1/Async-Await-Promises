@@ -145,26 +145,26 @@ const writeFilePro = (file, data) => {
 
 // Returning values from Async functions. Learning how async functions actually work.
 
-const getDogPic = async () => {
-  try {
-    const data = await readFilePro(`${__dirname}/dog.txt`);
-    console.log(`Breed: ${data}}`);
+// const getDogPic = async () => {
+//   try {
+//     const data = await readFilePro(`${__dirname}/dog.txt`);
+//     console.log(`Breed: ${data}}`);
 
-    const res = await superagent.get(
-      `https://dog.ceo/api/breed/${data}/images/random`
-    );
-    console.log(res.body.message);
+//     const res = await superagent.get(
+//       `https://dog.ceo/api/breed/${data}/images/random`
+//     );
+//     console.log(res.body.message);
 
-    await writeFilePro('dog-img.txt', res.body.message);
-    console.log('Random dog image saved to file!');
-  } catch (err) {
-    console.log(err);
+//     await writeFilePro('dog-img.txt', res.body.message);
+//     console.log('Random dog image saved to file!');
+//   } catch (err) {
+//     console.log(err);
 
-    throw err;
-  }
-  return '2: READY!!!';
-};
-console.log('1: Will get dog pics!');
+//     throw err;
+//   }
+//   return '2: READY!!!';
+// };
+// console.log('1: Will get dog pics!');
 // const x = getDogPic();
 // console.log(x);
 // console.log('3: Done getting dog pics!');
@@ -188,6 +188,51 @@ console.log('1: Will get dog pics!');
 // Important to identify what is our Promise(here it is the function 'getDogPic' so we use await keyword here and store it in a variable 'x' and then log to console.)
 // This is an async function calling an async function.
 // Just remember an async function returns a 'promise' and that promise only returns a value once the 'promise' is fulfilled i.e. resolved.
+// (async () => {
+//   try {
+//     console.log('1: Will get dog pics!');
+//     const x = await getDogPic();
+//     console.log(x);
+//     console.log('3: Done getting dog pics!');
+//   } catch (err) {
+//     console.log('ERROR ');
+//   }
+// })();
+
+// Section 46 - How to run multiple promises at the same time
+
+// Instead of calling for many API calls with multiple promises and making each one wait for the previous one, we can call all of them at the same time.
+// We will save the 'promise' into a variable and not the resolved value.
+// We will not use 'await' for each one, instead, we will use after all of them, in order to get the value of the resolved promise, await Promise.all() and save it to a variable where we will use an array of promises(the variables res1Pro, res2Pro, res3Pro). It gives us, however, an error. We want only the body.message and not everything else. So, we have to create a new array with just the body.message property. We will use .map() to loop through it and take the value out of our current array of objects i.e. promises []res1Pro, res2Pro, res3Pro]. We will save this in a variable 'imgs' and log to console. The console logs three images from the API within an array.
+// Now we need to change the res.body.message in our writeFilePro function because it no longer exists, so we are getting a ReferenError: res in not defined. Instead we want to write a string containing these three images(which are in the form of string from the API call) We will use imgs.join('\n) this is the new line character to make a seperation between the different strings. If we check our writeTofile 'dog-img.text' we will see all three API dog images saved there.
+
+const getDogPic = async () => {
+  try {
+    const data = await readFilePro(`${__dirname}/dog.txt`);
+    console.log(`Breed: ${data}}`);
+
+    const res1Pro = superagent.get(
+      `https://dog.ceo/api/breed/${data}/images/random`
+    );
+    const res2Pro = superagent.get(
+      `https://dog.ceo/api/breed/${data}/images/random`
+    );
+    const res3Pro = superagent.get(
+      `https://dog.ceo/api/breed/${data}/images/random`
+    );
+    const all = await Promise.all([res1Pro, res2Pro, res3Pro]);
+    const imgs = all.map((el) => el.body.message);
+    console.log(imgs);
+
+    await writeFilePro('dog-img.txt', imgs.join('\n'));
+    console.log('Random dog image saved to file!');
+  } catch (err) {
+    console.log(err);
+
+    throw err;
+  }
+  return '2: READY!!!';
+};
 (async () => {
   try {
     console.log('1: Will get dog pics!');
