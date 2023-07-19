@@ -125,6 +125,26 @@ const writeFilePro = (file, data) => {
 // We then add the rest of the promises after an 'await', log to console, the writeFilePro doesn't need variable because it doesn't return anything. We just need to log message it was successfully saved to file. We then call our async function after this code block.
 // To handle errors, we will use a standard JavaScript feature called 'Try/Catch.' We wrap all of our code in a 'Try' block, it will try to execute our code, and if there is an error, we will after this put a 'Catch' block. If there is an error, it will immediately exit the 'Try' block and go to the 'Catch" block and give us access to the error that occcured, which we can then handle with our code.
 // Also, know async/await is just syntatic sugar for Promises.
+// const getDogPic = async () => {
+//   try {
+//     const data = await readFilePro(`${__dirname}/dog.txt`);
+//     console.log(`Breed: ${data}}`);
+
+//     const res = await superagent.get(
+//       `https://dog.ceo/api/breed/${data}/images/random`
+//     );
+//     console.log(res.body.message);
+
+//     await writeFilePro('dog-img.txt', res.body.message);
+//     console.log('Random dog image saved to file!');
+//   } catch (err) {
+//     console.log(err);
+//   }
+// };
+// getDogPic();
+
+// Returning values from Async functions. Learning how async functions actually work.
+
 const getDogPic = async () => {
   try {
     const data = await readFilePro(`${__dirname}/dog.txt`);
@@ -139,6 +159,42 @@ const getDogPic = async () => {
     console.log('Random dog image saved to file!');
   } catch (err) {
     console.log(err);
+
+    throw err;
   }
+  return '2: READY!!!';
 };
-getDogPic();
+console.log('1: Will get dog pics!');
+// const x = getDogPic();
+// console.log(x);
+// console.log('3: Done getting dog pics!');
+
+// getDogPic()
+//   .then((x) => {
+//     console.log(x);
+//     console.log('3: Done getting dog pics!');
+//   })
+//   .catch((err) => {
+//     console.log('ERROR ');
+//   });
+
+// Above: instead of logging x to console we get a 'Promise {  <pending>} because promises are returned immediately and automatically. It says pending because it has not yet finished executing and so JS just moves on to the next console.log() and then finishes. To actually get the returned value of the string '2: READY!!!', then we have to deal with it as a promise and use either .then() method or async/await. We use the .then() method on the getDogPic() value and put console logs inside the callback function.
+// Now it works as expected and returns our value.
+// But to deal with an error is a little more tricky because it will continue just giving us the value of the above string. So we will use a built-in JS function called 'throw' in case there is an error. We will put a .catch() function on it to log the error. Throwing the error marks the entire 'catch' block as an error and it will be caught by the 'catch' to process it.
+
+// But now we are mixing Promises with Async/Await, so to implement this logic with async/await we will use an IIFE(Immediately Invoked Function Expression)
+// When using Async/Await use the Try/Catch pattern.
+// It is always necessary to write the (err) after the 'catch' keyword.
+// Important to identify what is our Promise(here it is the function 'getDogPic' so we use await keyword here and store it in a variable 'x' and then log to console.)
+// This is an async function calling an async function.
+// Just remember an async function returns a 'promise' and that promise only returns a value once the 'promise' is fulfilled i.e. resolved.
+(async () => {
+  try {
+    console.log('1: Will get dog pics!');
+    const x = await getDogPic();
+    console.log(x);
+    console.log('3: Done getting dog pics!');
+  } catch (err) {
+    console.log('ERROR ');
+  }
+})();
