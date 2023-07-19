@@ -100,21 +100,45 @@ const writeFilePro = (file, data) => {
   });
 };
 
-readFilePro(`${__dirname}/dog.txt`)
-  .then((data) => {
-    console.log(`Breed: ${data}`);
-    return superagent.get(`https://dog.ceo/api/breed/${data}/images/random`);
-  })
-  .then((res) => {
-    console.log(res.body.message);
-    return writeFilePro('dog-img.txt', res.body.message);
-  })
-  .then(() => {
-    console.log('Random dog image saved to file!');
-  })
-  .catch((err) => {
-    console.log(err.message);
-  });
+// readFilePro(`${__dirname}/dog.txt`)
+//   .then((data) => {
+//     console.log(`Breed: ${data}`);
+//     return superagent.get(`https://dog.ceo/api/breed/${data}/images/random`);
+//   })
+//   .then((res) => {
+//     console.log(res.body.message);
+//     return writeFilePro('dog-img.txt', res.body.message);
+//   })
+//   .then(() => {
+//     console.log('Random dog image saved to file!');
+//   })
+//   .catch((err) => {
+//     console.log(err.message);
+//   });
 
 // Async/Await
-// Instead of consuming Promises with
+
+// Instead of consuming Promises with the .then() method which still uses callback functions. Usually, when we write code, we'll be consuming promises all the time, but not reducing them, so async/await makes this much easier.
+
+// We need to create an async function:
+// Inside an async function we can always have more than one await expression, we use await and then the Promise(save it into a variable, here 'data'). The await stops code from running until the Promise is resolve. The value of the await expression is the resolved value of the Promise. The point is to make our code 'look like' synchronous code while being asynchronous. The code below is the same as line 103 above. We get our data, store it into a variable, and log it to console.
+// We then add the rest of the promises after an 'await', log to console, the writeFilePro doesn't need variable because it doesn't return anything. We just need to log message it was successfully saved to file. We then call our async function after this code block.
+// To handle errors, we will use a standard JavaScript feature called 'Try/Catch.' We wrap all of our code in a 'Try' block, it will try to execute our code, and if there is an error, we will after this put a 'Catch' block. If there is an error, it will immediately exit the 'Try' block and go to the 'Catch" block and give us access to the error that occcured, which we can then handle with our code.
+// Also, know async/await is just syntatic sugar for Promises.
+const getDogPic = async () => {
+  try {
+    const data = await readFilePro(`${__dirname}/dog.txt`);
+    console.log(`Breed: ${data}}`);
+
+    const res = await superagent.get(
+      `https://dog.ceo/api/breed/${data}/images/random`
+    );
+    console.log(res.body.message);
+
+    await writeFilePro('dog-img.txt', res.body.message);
+    console.log('Random dog image saved to file!');
+  } catch (err) {
+    console.log(err);
+  }
+};
+getDogPic();
